@@ -3,7 +3,7 @@ CREATE DATABASE emp_track_db;
 USE emp_track_db;
 
 CREATE TABLE dept_tbl (
-    id INT NOT NULL PRIMARY KEY,
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     dept_name VARCHAR(30)
 );
 
