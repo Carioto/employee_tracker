@@ -10,16 +10,16 @@ VALUES (10, "Lasers"),
 SELECT * FROM dept_tbl;
 
 INSERT INTO role_tbl (id, title, salary, dept_id)
-VALUES (100, "Lens Polisher", 25, 10),
-       (101, "Primary Ignition Starter", 15.88, 10),
-       (110, "AT-AT Specialist", 45.65, 11),
-       (111, "Tie Specialist - Bomber", 55.14, 11),
-       (112, "Safety Rails Installer", 4.15, 11),
-       (120, "Port Closer", 2.25, 12),
-       (130, "Emperial Plumber", 153.25, 13),
-       (140, "Green In Range Lead", 46.61, 14),
-       (150, "Social Networking Monitor", 75.28, 15),
-       (160, "Trash Compactor Maintainence", 44.32, 16);
+VALUES (100, "Lens Polisher", 25000, 10),
+       (101, "Primary Ignition Starter", 15000, 10),
+       (110, "AT-AT Specialist", 45000, 11),
+       (111, "Tie Specialist - Bomber", 55000, 11),
+       (112, "Safety Rails Installer", 4000, 11),
+       (120, "Port Closer", 2000, 12),
+       (130, "Emperial Plumber", 153000, 13),
+       (140, "Green In Range Lead Tech", 46000, 14),
+       (150, "Social Networking Monitor", 75000, 15),
+       (160, "Trash Compactor Maintainence", 44000, 16);
 
 SELECT * FROM role_tbl;
 
@@ -38,3 +38,12 @@ VALUES  (10101,"Dom", "West", 100, NULL),
         (10112,"Peter", "Serafin", 110, 10107);
 
 SELECT * FROM emp_tbl;
+
+
+SELECT SUM(salary) FROM role_tbl
+Join emp_tbl on emp_tbl.role_id = role_tbl.id
+WHERE role_tbl.dept_id = 11;
+ 
+
+
+
