@@ -38,12 +38,12 @@ VALUES  (10101,"Dom", "West", 100, NULL),
         (10112,"Peter", "Serafin", 110, 10107);
 
 SELECT * FROM emp_tbl;
+SELECT 
+emp_tbl.id AS 'Employee #',
+CONCAT(emp_tbl.first_name," ",emp_tbl.last_name)AS Employee,
+role_tbl.title AS Occupation,
+manager_id AS Manager
+FROM emp_tbl
+INNER JOIN role_tbl ON emp_tbl.role_id = role_tbl.id
 
-
-SELECT SUM(salary) FROM role_tbl
-Join emp_tbl on emp_tbl.role_id = role_tbl.id
-WHERE role_tbl.dept_id = 11;
  
-
-
-

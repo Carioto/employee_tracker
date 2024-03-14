@@ -32,7 +32,3 @@ SHOW TABLES;
 DESCRIBE emp_tbl;
 DESCRIBE role_tbl;
 DESCRIBE dept_tbl;
-
--- SELECT * FROM emp_tbl;
--- SELECT * FROM role_tbl;
--- SELECT * FROM dept_tbl;

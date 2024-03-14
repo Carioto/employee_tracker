@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const fs = require('fs/promises');
 const express = require('express');
 const mysql = require('mysql2');
-const { addRoleQuest,addEmpQuest,updEmpRoleQuest, question } = require('./lib/questions');
+const { addRoleQuest,addEmpQuest,updEmpRoleQuest, question, whichDeptQuest } = require('./lib/questions');
 const { pause,addDeptQuest,viewBudgetQuest } = require('./lib/questions');
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -64,29 +64,35 @@ function viewDepts() {
             console.log(`No table created.  Please review installation instructions.`);
         }else{
         console.table(results);
-        inquirer.prompt(pause).then(() => { askQ()});
+        inquirer.prompt(pause).then(() => {askQ()});
 }})
 };
 function viewRoles() {
     db.query('SELECT * FROM role_tbl', (err, results) => {
         if (err) {
             console.log(`No table created.  Please review installation instructions.`);
-            inquirer.prompt(pause).then(() => { askQ()});
+            inquirer.prompt(pause).then(() => {askQ()});
         }else{
         console.table(results);
-        inquirer.prompt(pause).then(() => { askQ()});
+        inquirer.prompt(pause).then(() => {askQ()});
 }})
 };
 
 function viewEmps() {
-    db.query('SELECT * FROM emp_tbl', (err, results) => {
+    db.query(`SELECT 
+    emp_tbl.id AS 'Employee #',
+    CONCAT(emp_tbl.first_name," ",emp_tbl.last_name)AS Employee,
+    role_tbl.title AS Occupation,
+    manager_id AS Manager
+    FROM emp_tbl
+    INNER JOIN role_tbl ON emp_tbl.role_id = role_tbl.id`, (err, results) => {
         if (err) {
             console.log(`No table created.  Please review installation instructions.`);
             inquirer.prompt(pause).then(() => {askQ()});
 
         }else{
             console.table(results);
-            inquirer.prompt(pause).then(() => { askQ()});
+            inquirer.prompt(pause).then(() => {askQ()});
 }})
 };
 
@@ -99,7 +105,7 @@ function addDept() {
             inquirer.prompt(pause).then(() => {askQ()});
         }else{
             console.log(`\n\x1b[32m${insDept} \x1b[0mhas been added\n`);
-            inquirer.prompt(pause).then(() => { askQ()});
+            inquirer.prompt(pause).then(() => {askQ()});
     }})
     })
 };
@@ -115,7 +121,7 @@ function addRole() {
             inquirer.prompt(pause).then(() => {askQ()});
         }else{
             console.log(`\n\x1b[32m${insRole} \x1b[0mhas been added\n`);
-            inquirer.prompt(pause).then(() => { askQ()});
+            inquirer.prompt(pause).then(() => {askQ()});
     }})
     })
 };
@@ -150,22 +156,32 @@ function updEmpRole() {
             inquirer.prompt(pause).then(() => {askQ()});
         }else{
             console.log(`\nThe employee's role has been updated.\n`);
-            inquirer.prompt(pause).then(() => { askQ()});
+            inquirer.prompt(pause).then(() => {askQ()});
 }})})
 };
 function viewEmpByDept() {
-    db.query(`SELECT emp_tbl.first_name,emp_tbl.last_name,dept_tbl.dept_name
-              FROM emp_tbl 
-              JOIN role_tbl ON  emp_tbl.role_id = role_tbl.id 
-              JOIN dept_tbl ON  role_tbl.dept_id = dept_tbl.id;`, (err, results) => {
-        if (err) {
-            console.log(`The custom table failed to generate.  Please review installation instructions.`);
-            inquirer.prompt(pause).then(() => { askQ()});
-        }else{
-        console.table(results);
-        inquirer.prompt(pause).then(() => { askQ()});
-}})
-};
+    inquirer.prompt(whichDeptQuest).then((ans) => { 
+        const whichDept = ans.whichDept;
+
+        db.query(`SELECT emp_tbl.first_name,emp_tbl.last_name,dept_tbl.dept_name
+                  FROM emp_tbl 
+                  JOIN role_tbl ON  emp_tbl.role_id = role_tbl.id 
+                  JOIN dept_tbl ON  role_tbl.dept_id = dept_tbl.id
+                  WHERE dept_tbl.id = ?;`,whichDept, (err, results) => {
+                     if (err) {
+                       console.log(`The custom table failed to generate.  Please review installation instructions.`);
+                        inquirer.prompt(pause).then(() => {askQ()});
+                     }else{
+                        if (results.length === 0){
+                            console.log('This department has no employees');
+                            inquirer.prompt(pause).then(() => {askQ()});
+                        } else {
+                       console.table(results);
+                       inquirer.prompt(pause).then(() => {askQ()});
+
+    } }})
+})};
+
 function viewBudget() {
     inquirer.prompt(viewBudgetQuest).then((ans) => {
         const budDept = ans.deptBud;
@@ -177,8 +193,13 @@ function viewBudget() {
                 console.log(`Error calculating budget. Check your data and try again.`);
                 inquirer.prompt(pause).then(() => {askQ()});
             }else{
-                console.table(results);
-                inquirer.prompt(pause).then(() => {askQ()});
+                if (!results[0].Budget){
+                    console.log('This deparment has no budget')
+                    inquirer.prompt(pause).then(() => {askQ()});
+                }else {
+                    console.log(`This budget is \$${results[0].Budget}`);
+                    inquirer.prompt(pause).then(() => {askQ()});
+                }
         }})
         })
     };
